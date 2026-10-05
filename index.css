@@ -1,0 +1,179 @@
+/* Early-web look: serif text, classic blue/purple links, plain rules. Kept readable. */
+:root {
+  --text: #1a1a1a;
+  --muted: #666;
+  --bg: #fdfdf8;
+  --link: #0000ee;
+  --visited: #551a8b;
+  --active: #ee0000;
+  --rule: #999;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Times New Roman', Times, Georgia, serif;
+  font-size: 18px;
+  line-height: 1.6;
+}
+
+.page {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 32px 20px 48px;
+}
+
+a {
+  color: var(--link);
+  text-decoration: underline;
+}
+a:visited {
+  color: var(--visited);
+}
+a:hover {
+  background: #ffffcc;
+}
+a:active {
+  color: var(--active);
+}
+a:focus-visible {
+  outline: 2px dotted var(--link);
+  outline-offset: 2px;
+}
+
+/* Old-school raised gray button (think Netscape-era forms) */
+a.btn,
+a.btn:visited {
+  display: inline-block;
+  padding: 4px 14px;
+  background: #e0e0e0;
+  color: #000;
+  text-decoration: none;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 0.85em;
+  border: 2px solid;
+  border-color: #fff #808080 #808080 #fff;
+  box-shadow: 1px 1px 0 #000;
+}
+a.btn:hover {
+  background: #ececec;
+}
+a.btn:active {
+  border-color: #808080 #fff #fff #808080;
+  box-shadow: none;
+  transform: translate(1px, 1px);
+}
+
+header h1 {
+  font-size: 2.2em;
+  margin: 0 0 4px;
+  font-weight: bold;
+}
+
+.tagline {
+  margin: 0;
+  font-style: italic;
+  font-size: 1.1em;
+}
+
+.small {
+  font-size: 0.9em;
+  margin: 8px 0 0;
+}
+
+nav {
+  margin-top: 20px;
+  font-size: 0.95em;
+}
+
+hr {
+  border: 0;
+  border-top: 1px solid var(--rule);
+  margin: 20px 0;
+}
+
+section {
+  scroll-margin-top: 16px;
+}
+
+h2 {
+  font-size: 1.45em;
+  margin: 28px 0 8px;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 2px;
+}
+
+h3 {
+  font-size: 1.1em;
+  margin: 16px 0 4px;
+}
+
+.role {
+  margin: 0 0 4px;
+  font-style: italic;
+}
+
+.muted {
+  color: var(--muted);
+  font-weight: normal;
+}
+
+ul {
+  padding-left: 1.4em;
+  margin: 6px 0;
+}
+
+li {
+  margin: 4px 0;
+}
+
+dl {
+  margin: 6px 0;
+}
+dt {
+  font-weight: bold;
+  margin-top: 8px;
+}
+dd {
+  margin: 0 0 0 1.4em;
+}
+
+.job + .job {
+  margin-top: 18px;
+}
+
+.top {
+  font-size: 0.8em;
+  text-align: right;
+  margin: 8px 0 0;
+}
+
+footer {
+  font-size: 0.85em;
+  color: var(--muted);
+  text-align: center;
+}
+
+@media (max-width: 520px) {
+  body {
+    font-size: 17px;
+  }
+  header h1 {
+    font-size: 1.8em;
+  }
+}
+
+@media print {
+  nav,
+  .top {
+    display: none;
+  }
+  a {
+    color: var(--text);
+  }
+}

@@ -3,13 +3,6 @@ export interface Experience {
   role: string;
   period: string;
   highlights: string[];
-  command: string;
-}
-
-export interface Project {
-  name: string;
-  description: string;
-  tech: string[];
 }
 
 export interface SkillCategory {
@@ -20,6 +13,7 @@ export interface SkillCategory {
 export interface Certification {
   name: string;
   issuer: string;
+  url?: string;
 }
 
 export interface Achievement {
@@ -27,23 +21,9 @@ export interface Achievement {
   description: string;
 }
 
-export enum AppState {
-  BOOTING,
-  DESKTOP,
-}
-
-export enum WindowType {
-  PROFILE = 'WHOAMI',
-  EXPERIENCE = 'HISTORY',
-  SKILLS = 'MAN SKILLS',
-  SECURITY = 'MSFCONSOLE',
-  CONTACT = 'NC -LVNP',
-}
-
-export interface WindowState {
-  id: WindowType;
-  isOpen: boolean;
-  isMinimized: boolean;
-  isClosing?: boolean;
-  zIndex: number;
+export interface Education {
+  degree: string;
+  school: string;
+  year: string;
+  note?: string;
 }
