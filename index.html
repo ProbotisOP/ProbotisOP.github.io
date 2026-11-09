@@ -11,10 +11,118 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <script type="module" crossorigin src="./assets/index-CRJzRFRz.js"></script>
-    <link rel="stylesheet" crossorigin href="./assets/index-CxXRBEMk.css">
+    <link rel="stylesheet" crossorigin href="./assets/index-Ht-gy9QJ.css">
   </head>
   <body>
+    <!-- Top-Right Sticky Accessibility Trigger Button -->
+    <button id="a11y-trigger" aria-label="Open Reading & Accessibility Controls" title="Accessibility & Reading Tools (Alt + A)">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <circle cx="12" cy="4" r="2.2"/>
+        <path d="M19 13v-2c-1.54.02-3.09-.75-4.07-1.83l-1.29-1.43c-.17-.19-.38-.34-.61-.45-.49-.24-1.07-.28-1.59-.09l-4.5 1.63c-.57.21-.94.75-.94 1.36V18c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5v-5.65l1.6-.58.9 4.95c.13.72.76 1.28 1.5 1.28h.08c.92-.04 1.62-.82 1.58-1.74l-.45-4.95c.78.69 1.78 1.13 2.88 1.19h.4c.83 0 1.5-.67 1.5-1.5s-.67-1.5-1.5-1.5z"/>
+      </svg>
+      <span class="a11y-btn-text">Accessibility</span>
+    </button>
+
+    <!-- Modal Backdrop -->
+    <div id="a11y-modal-backdrop"></div>
+
+    <!-- Accessibility Modal Panel -->
+    <div id="a11y-modal" role="dialog" aria-label="Accessibility and Reading Settings">
+      <div class="a11y-header">
+        <h3>
+          <svg style="width:20px;height:20px;fill:currentColor" viewBox="0 0 24 24">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-5-9h10v2H7z"/>
+          </svg>
+          Reading & Accessibility
+        </h3>
+        <button class="a11y-close" id="a11y-close-btn" aria-label="Close modal">&times;</button>
+      </div>
+
+      <!-- Theme / Contrast -->
+      <div class="a11y-group">
+        <span class="a11y-label">Color & Reading Mode</span>
+        <div class="a11y-options four-col">
+          <button class="a11y-btn" data-theme="default">Paper</button>
+          <button class="a11y-btn" data-theme="dark">🌙 Dark</button>
+          <button class="a11y-btn" data-theme="ereader">📖 Sepia</button>
+          <button class="a11y-btn" data-theme="contrast">⚡ High</button>
+        </div>
+      </div>
+
+      <!-- ADHD & Focus Features -->
+      <div class="a11y-group">
+        <span class="a11y-label">ADHD & Focus Helpers</span>
+        <label class="a11y-toggle">
+          <span>📏 Reading Ruler (Line Guide)</span>
+          <input type="checkbox" id="a11y-toggle-ruler">
+        </label>
+        <label class="a11y-toggle">
+          <span>🎯 Paragraph Spotlight (Dims Rest)</span>
+          <input type="checkbox" id="a11y-toggle-spotlight">
+        </label>
+        <label class="a11y-toggle">
+          <span>⚡ Bionic Eye-Guidance (Fast Read)</span>
+          <input type="checkbox" id="a11y-toggle-bionic">
+        </label>
+      </div>
+
+      <!-- Typography & Dyslexia -->
+      <div class="a11y-group">
+        <span class="a11y-label">Font Family</span>
+        <div class="a11y-options three-col">
+          <button class="a11y-btn" data-font="default">Serif</button>
+          <button class="a11y-btn" data-font="lexend">📚 Dyslexia</button>
+          <button class="a11y-btn" data-font="sans">Clean Sans</button>
+        </div>
+      </div>
+
+      <!-- Text Sizing -->
+      <div class="a11y-group">
+        <span class="a11y-label">Text Size</span>
+        <div class="a11y-options four-col">
+          <button class="a11y-btn" data-size="sm">A-</button>
+          <button class="a11y-btn" data-size="md">Normal</button>
+          <button class="a11y-btn" data-size="lg">A+</button>
+          <button class="a11y-btn" data-size="xl">A++</button>
+        </div>
+      </div>
+
+      <!-- Line Spacing -->
+      <div class="a11y-group">
+        <span class="a11y-label">Line Spacing</span>
+        <div class="a11y-options three-col">
+          <button class="a11y-btn" data-spacing="normal">Normal</button>
+          <button class="a11y-btn" data-spacing="relaxed">Relaxed</button>
+          <button class="a11y-btn" data-spacing="loose">Loose</button>
+        </div>
+      </div>
+
+      <!-- Assistive Tools: Magnifier & Speech -->
+      <div class="a11y-group">
+        <span class="a11y-label">Assistive Tools</span>
+        <label class="a11y-toggle">
+          <span>🔍 Screen Magnifier Loupe</span>
+          <input type="checkbox" id="a11y-toggle-magnifier">
+        </label>
+        <div style="display:flex;gap:6px;margin-top:6px;">
+          <button class="a11y-btn" id="a11y-tts-play" style="flex:1;">🔊 Read Aloud</button>
+          <button class="a11y-btn" id="a11y-tts-stop" style="flex:1;">⏹ Stop</button>
+        </div>
+      </div>
+
+      <button class="a11y-reset" id="a11y-reset-btn">↺ Reset All to Defaults</button>
+    </div>
+
+    <!-- Reading Ruler Overlay -->
+    <div id="a11y-ruler">
+      <div id="a11y-ruler-top"></div>
+      <div id="a11y-ruler-bar"></div>
+      <div id="a11y-ruler-bottom"></div>
+    </div>
+
+    <!-- Screen Magnifier Loupe -->
+    <div id="a11y-magnifier" aria-hidden="true"></div>
+
     <div id="root">
       <div class="page" id="top">
         <header>
@@ -242,5 +350,313 @@
         </footer>
       </div>
     </div>
+
+    <!-- Inline Accessibility Script (Instant Execution with Zero Dependencies) -->
+    <script>
+      (function() {
+        const STORAGE_KEY = 'satnam_a11y_prefs_v3';
+        const DEFAULTS = {
+          theme: 'default',
+          font: 'default',
+          size: 'md',
+          spacing: 'normal',
+          ruler: false,
+          spotlight: false,
+          bionic: false,
+          magnifier: false
+        };
+
+        let prefs = { ...DEFAULTS };
+        try {
+          const saved = localStorage.getItem(STORAGE_KEY);
+          if (saved) prefs = { ...DEFAULTS, ...JSON.parse(saved) };
+        } catch (e) {}
+
+        function savePrefs() {
+          try { localStorage.setItem(STORAGE_KEY, JSON.stringify(prefs)); } catch (e) {}
+        }
+
+        const trigger = document.getElementById('a11y-trigger');
+        const modal = document.getElementById('a11y-modal');
+        const backdrop = document.getElementById('a11y-modal-backdrop');
+        const closeBtn = document.getElementById('a11y-close-btn');
+
+        function toggleModal(open) {
+          const isOpen = open !== undefined ? open : !modal.classList.contains('open');
+          modal.classList.toggle('open', isOpen);
+          backdrop.classList.toggle('open', isOpen);
+          if (isOpen) updateModalUI();
+        }
+
+        if (trigger) trigger.addEventListener('click', () => toggleModal());
+        if (closeBtn) closeBtn.addEventListener('click', () => toggleModal(false));
+        if (backdrop) backdrop.addEventListener('click', () => toggleModal(false));
+
+        window.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape' && modal.classList.contains('open')) toggleModal(false);
+          if (e.altKey && (e.key === 'a' || e.key === 'A')) {
+            e.preventDefault();
+            toggleModal();
+          }
+        });
+
+        function updateModalUI() {
+          modal.querySelectorAll('[data-theme]').forEach(btn => {
+            btn.classList.toggle('active', btn.getAttribute('data-theme') === prefs.theme);
+          });
+          modal.querySelectorAll('[data-font]').forEach(btn => {
+            btn.classList.toggle('active', btn.getAttribute('data-font') === prefs.font);
+          });
+          modal.querySelectorAll('[data-size]').forEach(btn => {
+            btn.classList.toggle('active', btn.getAttribute('data-size') === prefs.size);
+          });
+          modal.querySelectorAll('[data-spacing]').forEach(btn => {
+            btn.classList.toggle('active', btn.getAttribute('data-spacing') === prefs.spacing);
+          });
+
+          const rulerCb = document.getElementById('a11y-toggle-ruler');
+          if (rulerCb) rulerCb.checked = prefs.ruler;
+
+          const spotCb = document.getElementById('a11y-toggle-spotlight');
+          if (spotCb) spotCb.checked = prefs.spotlight;
+
+          const bionicCb = document.getElementById('a11y-toggle-bionic');
+          if (bionicCb) bionicCb.checked = prefs.bionic;
+
+          const magCb = document.getElementById('a11y-toggle-magnifier');
+          if (magCb) magCb.checked = prefs.magnifier;
+        }
+
+        let originalMainHTML = null;
+
+        function applyBionic(enable) {
+          const main = document.querySelector('main');
+          if (!main) return;
+
+          if (!originalMainHTML) originalMainHTML = main.innerHTML;
+
+          if (!enable) {
+            if (main.getAttribute('data-bionic') === 'true') {
+              main.innerHTML = originalMainHTML;
+              main.removeAttribute('data-bionic');
+            }
+            return;
+          }
+
+          if (main.getAttribute('data-bionic') === 'true') return;
+
+          function processNode(node) {
+            const text = node.nodeValue;
+            if (!text || !text.trim()) return;
+
+            const words = text.split(/(\s+)/);
+            const span = document.createElement('span');
+
+            words.forEach(part => {
+              if (!part.trim()) {
+                span.appendChild(document.createTextNode(part));
+                return;
+              }
+              const match = part.match(/^([a-zA-Z0-9]+)(.*)$/);
+              if (match && match[1].length > 1) {
+                const word = match[1];
+                const rest = match[2];
+                const mid = Math.ceil(word.length / 2);
+                const b = document.createElement('b');
+                b.textContent = word.slice(0, mid);
+                span.appendChild(b);
+                span.appendChild(document.createTextNode(word.slice(mid) + rest));
+              } else {
+                span.appendChild(document.createTextNode(part));
+              }
+            });
+
+            node.parentNode.replaceChild(span, node);
+          }
+
+          function walk(el) {
+            if (!el || el.nodeType !== 1) return;
+            if (['SCRIPT', 'STYLE', 'BUTTON', 'INPUT'].includes(el.tagName)) return;
+            Array.from(el.childNodes).forEach(c => {
+              if (c.nodeType === 3) processNode(c);
+              else if (c.nodeType === 1) walk(c);
+            });
+          }
+
+          walk(main);
+          main.setAttribute('data-bionic', 'true');
+        }
+
+        function applySettings() {
+          const body = document.body;
+
+          // Theme
+          body.classList.remove('theme-dark', 'theme-ereader', 'theme-contrast');
+          if (prefs.theme === 'dark') body.classList.add('theme-dark');
+          else if (prefs.theme === 'ereader') body.classList.add('theme-ereader');
+          else if (prefs.theme === 'contrast') body.classList.add('theme-contrast');
+
+          // Font
+          body.classList.remove('font-lexend', 'font-sans');
+          if (prefs.font === 'lexend') body.classList.add('font-lexend');
+          else if (prefs.font === 'sans') body.classList.add('font-sans');
+
+          // Text Size
+          body.classList.remove('size-sm', 'size-md', 'size-lg', 'size-xl');
+          body.classList.add(`size-${prefs.size}`);
+
+          // Spacing
+          body.classList.remove('spacing-normal', 'spacing-relaxed', 'spacing-loose');
+          body.classList.add(`spacing-${prefs.spacing}`);
+
+          // Ruler
+          if (prefs.ruler) body.classList.add('ruler-active');
+          else body.classList.remove('ruler-active');
+
+          // Spotlight
+          if (prefs.spotlight) body.classList.add('focus-spotlight');
+          else body.classList.remove('focus-spotlight');
+
+          // Magnifier
+          if (prefs.magnifier) body.classList.add('magnifier-active');
+          else body.classList.remove('magnifier-active');
+
+          // Bionic
+          applyBionic(prefs.bionic);
+
+          updateModalUI();
+        }
+
+        // Theme Click Events
+        modal.querySelectorAll('[data-theme]').forEach(btn => {
+          btn.addEventListener('click', () => {
+            prefs.theme = btn.getAttribute('data-theme');
+            savePrefs();
+            applySettings();
+          });
+        });
+
+        // Font Click Events
+        modal.querySelectorAll('[data-font]').forEach(btn => {
+          btn.addEventListener('click', () => {
+            prefs.font = btn.getAttribute('data-font');
+            savePrefs();
+            applySettings();
+          });
+        });
+
+        // Size Click Events
+        modal.querySelectorAll('[data-size]').forEach(btn => {
+          btn.addEventListener('click', () => {
+            prefs.size = btn.getAttribute('data-size');
+            savePrefs();
+            applySettings();
+          });
+        });
+
+        // Spacing Click Events
+        modal.querySelectorAll('[data-spacing]').forEach(btn => {
+          btn.addEventListener('click', () => {
+            prefs.spacing = btn.getAttribute('data-spacing');
+            savePrefs();
+            applySettings();
+          });
+        });
+
+        // Checkbox toggles
+        document.getElementById('a11y-toggle-ruler').addEventListener('change', (e) => {
+          prefs.ruler = e.target.checked;
+          savePrefs();
+          applySettings();
+        });
+
+        document.getElementById('a11y-toggle-spotlight').addEventListener('change', (e) => {
+          prefs.spotlight = e.target.checked;
+          savePrefs();
+          applySettings();
+        });
+
+        document.getElementById('a11y-toggle-bionic').addEventListener('change', (e) => {
+          prefs.bionic = e.target.checked;
+          savePrefs();
+          applySettings();
+        });
+
+        document.getElementById('a11y-toggle-magnifier').addEventListener('change', (e) => {
+          prefs.magnifier = e.target.checked;
+          savePrefs();
+          applySettings();
+        });
+
+        // Reset
+        document.getElementById('a11y-reset-btn').addEventListener('click', () => {
+          prefs = { ...DEFAULTS };
+          savePrefs();
+          applySettings();
+        });
+
+        // Ruler Follows Cursor
+        const rulerTop = document.getElementById('a11y-ruler-top');
+        const rulerBar = document.getElementById('a11y-ruler-bar');
+        const rulerBottom = document.getElementById('a11y-ruler-bottom');
+
+        window.addEventListener('mousemove', (e) => {
+          if (!prefs.ruler) return;
+          const y = e.clientY;
+          const half = 24;
+          rulerTop.style.height = Math.max(0, y - half) + 'px';
+          rulerBar.style.top = (y - half) + 'px';
+          rulerBottom.style.top = (y + half) + 'px';
+        });
+
+        // Magnifier Follows Cursor
+        const mag = document.getElementById('a11y-magnifier');
+        window.addEventListener('mousemove', (e) => {
+          if (!prefs.magnifier) return;
+          const x = Math.min(window.innerWidth - 300, e.clientX + 20);
+          const y = Math.min(window.innerHeight - 100, e.clientY + 20);
+          mag.style.left = x + 'px';
+          mag.style.top = y + 'px';
+
+          const target = document.elementFromPoint(e.clientX, e.clientY);
+          if (target && target !== mag && !mag.contains(target) && target !== trigger) {
+            const text = target.innerText ? target.innerText.slice(0, 120) : '';
+            if (text && text.trim().length > 1) {
+              mag.textContent = text;
+            }
+          }
+        });
+
+        // Speech Synthesis Read Aloud
+        const playBtn = document.getElementById('a11y-tts-play');
+        const stopBtn = document.getElementById('a11y-tts-stop');
+
+        if (playBtn) {
+          playBtn.addEventListener('click', () => {
+            if (!('speechSynthesis' in window)) {
+              alert('Text-to-speech is not supported in this browser.');
+              return;
+            }
+            window.speechSynthesis.cancel();
+            const text = document.querySelector('main') ? document.querySelector('main').innerText : document.body.innerText;
+            const utter = new SpeechSynthesisUtterance(text);
+            utter.onstart = () => { playBtn.classList.add('active'); playBtn.textContent = '🔊 Reading...'; };
+            utter.onend = () => { playBtn.classList.remove('active'); playBtn.textContent = '🔊 Read Aloud'; };
+            utter.onerror = () => { playBtn.classList.remove('active'); playBtn.textContent = '🔊 Read Aloud'; };
+            window.speechSynthesis.speak(utter);
+          });
+        }
+
+        if (stopBtn) {
+          stopBtn.addEventListener('click', () => {
+            if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+            if (playBtn) { playBtn.classList.remove('active'); playBtn.textContent = '🔊 Read Aloud'; }
+          });
+        }
+
+        // Apply immediately
+        applySettings();
+      })();
+    </script>
   </body>
 </html>
