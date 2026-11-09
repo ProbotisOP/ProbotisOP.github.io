@@ -5,6 +5,14 @@ export interface Experience {
   highlights: string[];
 }
 
+export interface Project {
+  name: string;
+  description: string;
+  tech?: string[];
+  metrics?: string;
+  link?: string;
+}
+
 export interface SkillCategory {
   category: string;
   items: string[];

@@ -1,7 +1,7 @@
 import React from 'react';
 import { RESUME_DATA } from './constants';
 
-const { personal, education, experience, certifications, skills, security } = RESUME_DATA;
+const { personal, education, projects, experience, certifications, skills, security } = RESUME_DATA;
 
 // BASE_URL is './' (see vite.config.ts), so this resolves correctly locally and on GitHub Pages.
 const RESUME_URL = `${import.meta.env.BASE_URL}${personal.resume}`;
@@ -9,6 +9,7 @@ const RESUME_URL = `${import.meta.env.BASE_URL}${personal.resume}`;
 const SECTIONS = [
   { id: 'about', label: 'About' },
   { id: 'education', label: 'Education' },
+  { id: 'projects', label: 'Projects & Datathon' },
   { id: 'experience', label: 'Experience' },
   { id: 'certs', label: 'Certifications' },
   { id: 'skills', label: 'Skills' },
@@ -43,7 +44,7 @@ function App() {
         <h1>{personal.name}</h1>
         <p className="tagline">{personal.role}</p>
         <p className="small">
-          {personal.location} · <a href={`mailto:${personal.email}`}>{personal.email}</a> ·{' '}
+          {personal.location} · <span>{personal.phone}</span> · <a href={`mailto:${personal.email}`}>{personal.email}</a> ·{' '}
           <Ext href={personal.links.linkedin}>LinkedIn</Ext> ·{' '}
           <Ext href={personal.links.github}>GitHub</Ext>
         </p>
@@ -88,6 +89,22 @@ function App() {
               </li>
             ))}
           </ul>
+        </Section>
+
+        <Section id="projects" title="Featured Projects & Datathon">
+          {projects.map((proj, i) => (
+            <div key={i} className="job">
+              <h3>
+                {proj.name} {proj.metrics && <span className="muted">({proj.metrics})</span>}
+              </h3>
+              <p>{proj.description}</p>
+              {proj.tech && (
+                <p className="small muted">
+                  <b>Tech:</b> {proj.tech.join(', ')}
+                </p>
+              )}
+            </div>
+          ))}
         </Section>
 
         <Section id="experience" title="Experience">
@@ -147,10 +164,13 @@ function App() {
         </Section>
 
         <Section id="contact" title="Contact">
-          <p>The best way to reach me is by email. I usually reply within a day or two.</p>
+          <p>The best way to reach me is by email. I usually reply promptly.</p>
           <ul>
             <li>
               Email: <a href={`mailto:${personal.email}`}>{personal.email}</a>
+            </li>
+            <li>
+              Phone: {personal.phone}
             </li>
             <li>
               LinkedIn: <Ext href={personal.links.linkedin}>linkedin.com/in/satnams</Ext>
