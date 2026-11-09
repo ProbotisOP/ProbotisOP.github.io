@@ -176,7 +176,8 @@ footer {
   #a11y-modal,
   #a11y-modal-backdrop,
   #a11y-ruler,
-  #a11y-magnifier {
+  #a11y-magnifier,
+  #a11y-line-highlight {
     display: none !important;
   }
   a {
@@ -341,27 +342,87 @@ body.ruler-active #a11y-ruler {
   transition: top 0.02s linear;
 }
 
-/* Magnifier / Loupe Tool */
+/* Magnifier / Loupe Tool & Seamless Line Highlighting */
+#a11y-line-highlight {
+  display: none;
+  position: fixed;
+  pointer-events: none;
+  z-index: 9998;
+  background: rgba(3, 102, 214, 0.12);
+  border-left: 3px solid var(--link);
+  border-radius: 4px;
+  box-sizing: border-box;
+  transition: top 0.04s ease-out, height 0.04s ease-out;
+}
+body.theme-dark #a11y-line-highlight {
+  background: rgba(88, 166, 255, 0.18);
+  border-left-color: #58a6ff;
+}
+body.theme-ereader #a11y-line-highlight {
+  background: rgba(180, 83, 9, 0.15);
+  border-left-color: #b45309;
+}
+body.theme-contrast #a11y-line-highlight {
+  background: rgba(255, 255, 0, 0.28);
+  border-left: 4px solid #ffff00;
+  outline: 1px solid #ffff00;
+}
+body.magnifier-active #a11y-line-highlight {
+  display: block;
+}
+
 #a11y-magnifier {
   display: none;
   position: fixed;
-  width: 280px;
-  min-height: 75px;
-  border-radius: 8px;
+  width: min(520px, 92vw);
+  min-height: 64px;
+  border-radius: 10px;
   pointer-events: none;
-  z-index: 9999;
+  z-index: 99999;
   background: var(--bg);
   color: var(--text);
   border: 2px solid var(--link);
-  box-shadow: 0 12px 30px rgba(0,0,0,0.4);
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.28), 0 2px 8px rgba(0, 0, 0, 0.12);
   overflow: hidden;
-  padding: 10px 14px;
-  font-size: 1.45em;
-  line-height: 1.35;
+  padding: 8px 14px 12px;
   box-sizing: border-box;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition: opacity 0.1s ease;
 }
 body.magnifier-active #a11y-magnifier {
   display: block;
+}
+.a11y-mag-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--link);
+  opacity: 0.9;
+  margin-bottom: 4px;
+}
+.a11y-mag-content {
+  font-size: 1.35rem;
+  line-height: 1.4;
+  font-weight: 500;
+  word-break: break-word;
+  color: var(--text);
+}
+body.theme-contrast #a11y-magnifier {
+  background: #000000;
+  color: #ffffff;
+  border: 3px solid #ffff00;
+  box-shadow: 0 0 0 2px #000000;
+}
+body.theme-contrast .a11y-mag-badge {
+  color: #ffff00;
+}
+body.theme-contrast .a11y-mag-content {
+  color: #ffffff;
 }
 
 /* ========================================================
