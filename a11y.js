@@ -48,6 +48,11 @@
   // Store original HTML of main for clean Bionic toggle
   let originalMainHTML = null;
 
+  // Cached lines for seamless line-by-line magnifier
+  let cachedBlock = null;
+  let cachedLines = [];
+  let lastScrollY = window.scrollY;
+
   function initDOM() {
     if (document.getElementById('a11y-trigger')) return;
 
@@ -61,10 +66,19 @@
     `;
     document.body.appendChild(ruler);
 
-    // 2. Magnifier Loupe
+    // 2. Line Highlight & Magnifier Loupe
+    const lineHighlight = document.createElement('div');
+    lineHighlight.id = 'a11y-line-highlight';
+    lineHighlight.setAttribute('aria-hidden', 'true');
+    document.body.appendChild(lineHighlight);
+
     const magnifier = document.createElement('div');
     magnifier.id = 'a11y-magnifier';
     magnifier.setAttribute('aria-hidden', 'true');
+    magnifier.innerHTML = `
+      <div class="a11y-mag-badge">🔍 Magnifier · Line Guide</div>
+      <div class="a11y-mag-content">Hover over any line to magnify</div>
+    `;
     document.body.appendChild(magnifier);
 
     // 3. Floating Round Button
@@ -210,8 +224,19 @@
     else body.classList.remove('focus-spotlight');
 
     // Magnifier
-    if (prefs.magnifier) body.classList.add('magnifier-active');
-    else body.classList.remove('magnifier-active');
+    if (prefs.magnifier) {
+      body.classList.add('magnifier-active');
+      const m = document.getElementById('a11y-magnifier');
+      if (m) m.style.display = 'block';
+    } else {
+      body.classList.remove('magnifier-active');
+      const m = document.getElementById('a11y-magnifier');
+      const lh = document.getElementById('a11y-line-highlight');
+      if (m) m.style.display = 'none';
+      if (lh) lh.style.display = 'none';
+      cachedBlock = null;
+      cachedLines = [];
+    }
 
     // Bionic Reading
     applyBionic(prefs.bionic);
@@ -421,37 +446,239 @@
       applySettings();
     });
 
+    // Seamless Line-by-Line Detection for Magnifier & Line Highlight
+    function getLeafTextNodes(root) {
+      const nodes = [];
+      const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+        acceptNode: (n) => {
+          const p = n.parentElement;
+          if (!p || ['SCRIPT', 'STYLE'].includes(p.tagName) || p.closest('#a11y-modal, #a11y-trigger, #a11y-magnifier, #a11y-ruler, #a11y-line-highlight, #a11y-modal-backdrop')) {
+            return NodeFilter.FILTER_REJECT;
+          }
+          return n.nodeValue && n.nodeValue.trim().length > 0 ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
+        }
+      });
+      let node;
+      while ((node = walker.nextNode())) {
+        nodes.push(node);
+      }
+      return nodes;
+    }
+
+    function computeLinesForBlock(block) {
+      const textNodes = getLeafTextNodes(block);
+      if (!textNodes.length) {
+        const rawText = block.innerText ? block.innerText.trim() : '';
+        if (!rawText) return [];
+        const bRect = block.getBoundingClientRect();
+        return [{
+          top: bRect.top,
+          bottom: bRect.bottom,
+          left: bRect.left,
+          right: bRect.right,
+          words: [rawText],
+          text: rawText
+        }];
+      }
+
+      const range = document.createRange();
+      const wordEntries = [];
+
+      for (let i = 0; i < textNodes.length; i++) {
+        const node = textNodes[i];
+        const text = node.nodeValue;
+        const regex = /\S+/g;
+        let match;
+        while ((match = regex.exec(text)) !== null) {
+          const word = match[0];
+          const start = match.index;
+          const end = start + word.length;
+          try {
+            range.setStart(node, start);
+            range.setEnd(node, end);
+            const rect = range.getBoundingClientRect();
+            if (rect.width > 0 && rect.height > 0) {
+              wordEntries.push({ word, rect });
+            }
+          } catch (err) {}
+        }
+      }
+
+      if (!wordEntries.length) {
+        const bRect = block.getBoundingClientRect();
+        const rawText = block.innerText ? block.innerText.trim() : '';
+        return rawText ? [{
+          top: bRect.top,
+          bottom: bRect.bottom,
+          left: bRect.left,
+          right: bRect.right,
+          words: [rawText],
+          text: rawText
+        }] : [];
+      }
+
+      wordEntries.sort((a, b) => {
+        const midA = (a.rect.top + a.rect.bottom) / 2;
+        const midB = (b.rect.top + b.rect.bottom) / 2;
+        if (Math.abs(midA - midB) > 7) {
+          return midA - midB;
+        }
+        return a.rect.left - b.rect.left;
+      });
+
+      const lines = [];
+      for (let i = 0; i < wordEntries.length; i++) {
+        const entry = wordEntries[i];
+        const rect = entry.rect;
+        const wordMid = (rect.top + rect.bottom) / 2;
+
+        let matchedLine = null;
+        for (let j = 0; j < lines.length; j++) {
+          const l = lines[j];
+          const lineMid = (l.top + l.bottom) / 2;
+          if (Math.abs(wordMid - lineMid) <= 9 || (rect.top < l.bottom && rect.bottom > l.top)) {
+            matchedLine = l;
+            break;
+          }
+        }
+
+        if (matchedLine) {
+          matchedLine.words.push(entry.word);
+          matchedLine.top = Math.min(matchedLine.top, rect.top);
+          matchedLine.bottom = Math.max(matchedLine.bottom, rect.bottom);
+          matchedLine.left = Math.min(matchedLine.left, rect.left);
+          matchedLine.right = Math.max(matchedLine.right, rect.right);
+        } else {
+          lines.push({
+            top: rect.top,
+            bottom: rect.bottom,
+            left: rect.left,
+            right: rect.right,
+            words: [entry.word]
+          });
+        }
+      }
+
+      for (let i = 0; i < lines.length; i++) {
+        lines[i].text = lines[i].words.join(' ');
+      }
+
+      return lines;
+    }
+
+    function getActiveLine(target, clientX, clientY) {
+      if (!target || target.closest('#a11y-modal, #a11y-trigger, #a11y-ruler, #a11y-magnifier, #a11y-line-highlight, #a11y-modal-backdrop')) {
+        return null;
+      }
+
+      const block = target.closest('p, li, h1, h2, h3, h4, dt, dd, nav, header, footer, .tagline, .small') || target;
+      if (!block || block === document.body || block === document.documentElement) {
+        return null;
+      }
+
+      const currentScrollY = window.scrollY;
+      if (cachedBlock !== block || Math.abs(currentScrollY - lastScrollY) > 2) {
+        cachedBlock = block;
+        lastScrollY = currentScrollY;
+        cachedLines = computeLinesForBlock(block);
+      }
+
+      if (!cachedLines || !cachedLines.length) return null;
+
+      let closest = null;
+      let minDistance = Infinity;
+
+      for (let i = 0; i < cachedLines.length; i++) {
+        const l = cachedLines[i];
+        if (clientY >= l.top && clientY <= l.bottom) {
+          closest = l;
+          break;
+        }
+        const mid = (l.top + l.bottom) / 2;
+        const dist = Math.abs(clientY - mid);
+        if (dist < minDistance) {
+          minDistance = dist;
+          closest = l;
+        }
+      }
+
+      if (closest && minDistance <= 38) {
+        return closest;
+      }
+      return null;
+    }
+
     // Reading Ruler tracker
     const rulerTop = document.getElementById('a11y-ruler-top');
     const rulerBar = document.getElementById('a11y-ruler-bar');
     const rulerBottom = document.getElementById('a11y-ruler-bottom');
-
-    window.addEventListener('mousemove', (e) => {
-      if (!prefs.ruler) return;
-      const y = e.clientY;
-      const halfHeight = 22;
-      rulerTop.style.height = `${Math.max(0, y - halfHeight)}px`;
-      rulerBar.style.top = `${y - halfHeight}px`;
-      rulerBottom.style.top = `${y + halfHeight}px`;
-    });
-
-    // Magnifier Loupe tracker
     const mag = document.getElementById('a11y-magnifier');
-    window.addEventListener('mousemove', (e) => {
-      if (!prefs.magnifier) return;
-      
-      const x = Math.min(window.innerWidth - 300, e.clientX + 24);
-      const y = Math.min(window.innerHeight - 120, e.clientY + 24);
-      mag.style.left = `${x}px`;
-      mag.style.top = `${y}px`;
+    const magContent = mag ? mag.querySelector('.a11y-mag-content') : null;
+    const lineHighlight = document.getElementById('a11y-line-highlight');
 
-      const target = document.elementFromPoint(e.clientX, e.clientY);
-      if (target && target !== mag && !mag.contains(target) && target !== trigger) {
-        const text = target.innerText ? target.innerText.slice(0, 140) : '';
-        if (text && text.trim().length > 1) {
-          mag.textContent = text;
+    window.addEventListener('scroll', () => { cachedBlock = null; }, { passive: true });
+    window.addEventListener('resize', () => { cachedBlock = null; }, { passive: true });
+
+    let animFrame = null;
+    window.addEventListener('mousemove', (e) => {
+      if (!prefs.ruler && !prefs.magnifier) return;
+
+      if (animFrame) cancelAnimationFrame(animFrame);
+      animFrame = requestAnimationFrame(() => {
+        // 1. Reading Ruler
+        if (prefs.ruler && rulerTop && rulerBar && rulerBottom) {
+          const y = e.clientY;
+          const halfHeight = 22;
+          rulerTop.style.height = `${Math.max(0, y - halfHeight)}px`;
+          rulerBar.style.top = `${y - halfHeight}px`;
+          rulerBottom.style.top = `${y + halfHeight}px`;
         }
-      }
+
+        // 2. Magnifier Loupe & Seamless Line Highlight
+        if (prefs.magnifier && mag) {
+          const target = document.elementFromPoint(e.clientX, e.clientY);
+          const line = getActiveLine(target, e.clientX, e.clientY);
+
+          if (line && line.text) {
+            if (magContent) {
+              magContent.textContent = line.text;
+            } else {
+              mag.textContent = line.text;
+            }
+            mag.style.display = 'block';
+
+            if (lineHighlight) {
+              lineHighlight.style.display = 'block';
+              lineHighlight.style.top = `${line.top - 2}px`;
+              lineHighlight.style.left = `${Math.max(6, line.left - 6)}px`;
+              lineHighlight.style.width = `${line.right - line.left + 12}px`;
+              lineHighlight.style.height = `${line.bottom - line.top + 4}px`;
+            }
+
+            const magWidth = mag.offsetWidth || 440;
+            const magHeight = mag.offsetHeight || 75;
+
+            let posY = e.clientY - magHeight - 16;
+            if (posY < 12) {
+              posY = e.clientY + 28;
+            }
+
+            let posX = e.clientX - 40;
+            if (posX + magWidth > window.innerWidth - 16) {
+              posX = window.innerWidth - magWidth - 16;
+            }
+            if (posX < 16) posX = 16;
+
+            mag.style.left = `${posX}px`;
+            mag.style.top = `${posY}px`;
+          } else {
+            if (lineHighlight) lineHighlight.style.display = 'none';
+            if (!target || target.closest('#a11y-modal, #a11y-trigger, #a11y-modal-backdrop')) {
+              mag.style.display = 'none';
+            }
+          }
+        }
+      });
     });
 
     // Text to Speech (TTS)
